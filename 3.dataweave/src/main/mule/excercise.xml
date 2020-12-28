@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="exerciseFlow" doc:id="883798d4-d736-44ac-b51c-d26507251149" >
+		<ee:transform doc:name="Transform Message" doc:id="97de1ad4-d718-4b07-90bc-82af37a0809f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var itemsList = {
+	"items":[
+		"item":{
+			"description": "Product1",
+			"quantity": 1,
+			"unit_price": 20,
+			"toDiscount": "No"
+		},
+		"item":{
+			"description": "Product2",
+			"quantity": 2,
+			"unit_price": 30,
+			"toDiscount": "Yes"
+		},
+		"item":{
+			"description": "Product3",
+			"quantity": 3,
+			"unit_price": 40,
+			"toDiscount": "Yes"
+		}
+	]
+}
+output application/json
+---
+using (sum_prices_cost = [17, 10, 20, 5, 10] reduce ((element, accumulated) -> accumulated + element))
+{
+	"products": itemsList.items.*item default [] map ((currItem) -> 
+		using (item_total_price = currItem.quantity * currItem.unit_price)
+		if (item_total_price < sum_prices_cost) (currItem.description) else ""
+	)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="96181957-fd7d-42f0-9286-89c5edfd4d1b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var tax = 0.23
+var discount = 0.10
+var itemsList = {
+	"items":[
+		"item":{
+			"description": "Product1",
+			"quantity": 1,
+			"unit_price": 20,
+			"toDiscount": "No"
+		},
+		"item":{
+			"description": "Product2",
+			"quantity": 2,
+			"unit_price": 30,
+			"toDiscount": "Yes"
+		},
+		"item":{
+			"description": "Product3",
+			"quantity": 3,
+			"unit_price": 40,
+			"toDiscount": "Yes"
+		}
+	]
+}
+output application/json
+---
+"invoice": {
+	"items": 
+		itemsList.items.*item map ((item) -> 
+		using( item_final_price = item.unit_price * item.quantity)
+		{
+			"item": item.description,
+			"quantity": item.quantity,
+			"unit_price": item.unit_price,
+			"discount": if (item.toDiscount contains "Yes") (discount) else (0.00),
+			("cost": if (item.toDiscount contains "Yes") 
+				(item_final_price * (1- discount))
+			else item_final_price)
+		}
+				
+	),
+	"total": 
+		using (sum_items_cost = itemsList.items.item.*unit_price default [] reduce ( (element, accumulated = 0) -> accumulated + element) )
+		{
+			"total_cost_before_taxation": sum_items_cost,
+			"taxation": tax*100 ++ "%",
+			"total_cost_after_taxation": sum_items_cost * (1 + tax) as Number
+		}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="excerciseFlow" doc:id="1f2d0807-7418-4b15-861e-109e0fad27de" >
+		<ee:transform doc:name="Transform Message" doc:id="6b973d24-9be4-42de-8b40-40c6a80e4e28" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var itemsList = {
+	"items":[
+		"item":{
+			"description": "Product1",
+			"quantity": 1,
+			"unit_price": 20,
+			"toDiscount": "No"
+		},
+		"item":{
+			"description": "Product2",
+			"quantity": 2,
+			"unit_price": 30,
+			"toDiscount": "Yes"
+		},
+		"item":{
+			"description": "Product3",
+			"quantity": 3,
+			"unit_price": 40,
+			"toDiscount": "Yes"
+		}
+	]
+}
+output application/json
+---
+using (sum_prices_cost = [20, 10, 20, 5, 10] reduce ((element, accumulated) -> accumulated + element))
+{
+	"products": itemsList.items.item default [] map ((currItem) -> 
+		using (item_total_price = currItem.quantity * currItem.unit_price)
+		if (item_total_price < sum_prices_cost) (currItem.description) else "xxx"
+	)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="3d39d430-51f2-4c47-bf96-4634f64a16fc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var tax = 0.23
+var discount = 0.10
+var itemsList = {
+	"items":[
+		"item":{
+			"description": "Product1",
+			"quantity": 1,
+			"unit_price": 20,
+			"toDiscount": "No"
+		},
+		"item":{
+			"description": "Product2",
+			"quantity": 2,
+			"unit_price": 30,
+			"toDiscount": "Yes"
+		},
+		"item":{
+			"description": "Product3",
+			"quantity": 3,
+			"unit_price": 40,
+			"toDiscount": "Yes"
+		}
+	]
+}
+output application/json
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+
+</mule>
