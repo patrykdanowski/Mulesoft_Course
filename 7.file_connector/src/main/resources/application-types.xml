@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="fileExample" format="json">
+      <types:shape format="weave" example="examples/fileExample.json"><![CDATA[%dw 2.0
+
+type fileExample = {|
+  fileName: String, 
+  customer: {|
+    customerId: Number {"typeId": "int"}, 
+    customerName: String
+  |}
+|} {"example": "{\\\"fileName\\\":\\\"file1\\\",\\\"customer\\\":{\\\"customerId\\\":5,\\\"customerName\\\":\\\"Rose\\\"}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="fileMetadata" format="csv">
+      <types:shape format="weave" example="examples/myFile-1.csv"><![CDATA[%dw 2.0
+
+type fileMetadata = Array<{|  Name: String,   Lastname: String,   Age: String|}> {"isQuotedString": "false",
+"header": "true",
+"headerLineNumber": "0"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#41311049-ac8a-4546-81d1-c67eea72ac01">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="fileExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a5c32a94-58b9-415e-8e13-a6933dfaffe2">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="fileExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b277208a-0469-46cb-a66b-d2cdf4620364">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="fileExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d8d3703a-1cbb-47c6-b33e-d9cbb9f4d9cd">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="fileExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c39c5c20-e089-4f06-a2ed-a1ed67496610"/>
+  <types:enrichment select="#7ee02a26-21bc-4991-b93a-f121a80f51fc"/>
+  <types:enrichment select="#5b27753a-bc3c-4a48-868c-21552821d630"/>
+  <types:enrichment select="#961146cc-f655-494d-b433-9a3e024f76f6">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="fileMetadata"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
